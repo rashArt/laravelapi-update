@@ -39,3 +39,20 @@ Content-Type: application/json
 #     }
 #   }
 # }
+
+### obtener usuario
+GET {{url}}/me
+Accept: application/json
+Authorization: Bearer {{token}}
+
+# {
+#   "status": true,
+#   "code": 200,
+#   "data": {
+#     "user": {
+#       "id": 1,
+#       "name": "Admin Legacy",
+#       "email": "admin@legacy.test"
+#     }
+#   }
+# }

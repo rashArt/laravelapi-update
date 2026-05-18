@@ -29,7 +29,7 @@ yarn-error.log*
 # Testing
 /coverage/
 .phpunit.result.cache
-phpunit.xml
+# phpunit.xml
 
 # OS
 .DS_Store

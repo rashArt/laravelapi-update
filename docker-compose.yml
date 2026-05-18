@@ -12,7 +12,10 @@ services:
     ports:
       - "8081:80"
   php:
-    image: rash07/php:8.3
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+    image: legacy_php_sqlite:8.3
     container_name: legacy_php
     working_dir: /var/www/html
     volumes:
