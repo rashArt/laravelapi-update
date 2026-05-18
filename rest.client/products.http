@@ -1,0 +1,117 @@
+@url = http://localhost:8081/api
+@token = ouQWurpHdU68MIOsaZl3F8eQItVwAIWNrv1eP0ElmQ1Fy2miyQRlgLs9VQr1
+
+### products
+GET {{url}}/products
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+# {
+#   "status": true,
+#   "code": 200,
+#   "data": [
+#     {
+#       "id": 9460,
+#       "name": "Producto Legacy 9460",
+#       "description": "Producto generado para prueba de rendimiento 9460",
+#       "price": "62.14",
+#       "stock": 79,
+#       "status": true,
+#       "category_id": 95,
+#       "category": {
+#         "id": 95,
+#         "name": "Categoria 95"
+#       },
+#       "created_at": "2026-05-18T18:28:50.000000Z",
+#       "updated_at": "2026-05-18T18:28:50.000000Z"
+#     },
+#     ...
+#   ],
+#   "links": {
+#     "first": null,
+#     "last": null,
+#     "prev": null,
+#     "next": "http:\/\/localhost:8081\/api\/products?cursor=eyJjcmVhdGVkX2F0IjoiMjAyNi0wNS0xOCAxODoyODo1MCIsIl9wb2ludHNUb05leHRJdGVtcyI6dHJ1ZX0"
+#   },
+#   "meta": {
+#     "path": "http:\/\/localhost:8081\/api\/products",
+#     "per_page": 15,
+#     "next_cursor": "eyJjcmVhdGVkX2F0IjoiMjAyNi0wNS0xOCAxODoyODo1MCIsIl9wb2ludHNUb05leHRJdGVtcyI6dHJ1ZX0",
+#     "prev_cursor": null
+#   }
+# }
+
+### products
+GET {{url}}/products?name=102
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### lista de movimientos
+GET {{url}}/products/1460/stock-movements
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+# {
+#   "status": true,
+#   "code": 200,
+#   "data": [
+#     {
+#       "id": 8676,
+#       "product_id": 1460,
+#       "type": "entrada",
+#       "quantity": 20,
+#       "reason": "Movimiento legacy 8676",
+#       "user": {
+#         "id": 1,
+#         "name": "Admin Legacy"
+#       },
+#       "created_at": "2025-11-23T18:28:51.000000Z",
+#       "updated_at": "2026-05-18T18:28:51.000000Z"
+#     }
+#   ],
+#   "links": {
+#     "first": null,
+#     "last": null,
+#     "prev": null,
+#     "next": null
+#   },
+#   "meta": {
+#     "path": "http:\/\/localhost:8081\/api\/products\/1460\/stock-movements",
+#     "per_page": 15,
+#     "next_cursor": null,
+#     "prev_cursor": null
+#   }
+# }
+
+### generar movimiento
+POST {{url}}/products/1460/stock-movements
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "type": "entrada",
+    "quantity": 20,
+    "reason": "Reposición de inventario"
+}
+
+# {
+#   "status": true,
+#   "code": 201,
+#   "data": {
+#     "id": 30003,
+#     "product_id": 1460,
+#     "type": "entrada",
+#     "quantity": 20,
+#     "reason": "Reposici\u00f3n de inventario",
+#     "user": {
+#       "id": 1,
+#       "name": "Admin Legacy"
+#     },
+#     "created_at": "2026-05-18T20:19:18.000000Z",
+#     "updated_at": "2026-05-18T20:19:18.000000Z"
+#   }
+# }

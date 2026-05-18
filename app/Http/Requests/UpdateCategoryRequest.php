@@ -21,7 +21,7 @@ class UpdateCategoryRequest extends FormRequest
      */
     public function rules(): array
     {
-        $categoryId = $this->route('category');
+        $categoryId = $this->route('id');
 
         return [
             'name'        => ['sometimes', 'string', 'max:255', Rule::unique('categories', 'name')->ignore($categoryId)],

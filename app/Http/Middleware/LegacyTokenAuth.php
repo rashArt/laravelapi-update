@@ -6,6 +6,7 @@ use App\Http\Traits\ApiResponse;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LegacyTokenAuth
 {
@@ -27,8 +28,8 @@ class LegacyTokenAuth
             return $this->errorResponse('No autorizado.', 401);
         }
 
-        // Inyectar ID del usuario autenticado en el request para uso en controladores
-        $request->merge(['auth_user_id' => $user->id]);
+        // Registrar el usuario en el guard de Laravel para disponibilizar auth()->user() y $request->user()
+        Auth::login($user);
 
         return $next($request);
     }

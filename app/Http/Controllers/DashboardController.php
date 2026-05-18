@@ -15,9 +15,9 @@ class DashboardController extends Controller
 
     public function index()
     {
-        // Conteos cacheados con tags para invalidación selectiva (TTL: 1 hora)
-        $products   = Cache::tags(['dashboard', 'products'])->remember('products_count', 3600, fn () => Product::count());
-        $categories = Cache::tags(['dashboard', 'categories'])->remember('categories_count', 3600, fn () => Category::count());
+        // Conteos cacheados sin tags (TTL: 1 hora); se invalidan desde los Services al mutar datos
+        $products   = Cache::remember('products_count', 3600, fn () => Product::count());
+        $categories = Cache::remember('categories_count', 3600, fn () => Category::count());
 
         return $this->successResponse([
             'products'       => $products,

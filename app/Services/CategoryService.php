@@ -14,10 +14,6 @@ class CategoryService
      */
     private const CACHE_TTL = 600;
 
-    /**
-     * Tag de caché utilizado para invalidar todas las entradas relacionadas a categorías.
-     */
-    private const CACHE_TAG = 'categories';
 
     /**
      * Retorna las categorías paginadas con cursor para mayor eficiencia en grandes volúmenes.
@@ -48,7 +44,7 @@ class CategoryService
      */
     public function findOrFail(int $id): Category
     {
-        return Cache::tags([self::CACHE_TAG])->remember(
+        return Cache::remember(
             "categories.{$id}",
             self::CACHE_TTL,
             fn () => Category::findOrFail($id)
@@ -64,8 +60,8 @@ class CategoryService
 
         Log::info('Categoría creada', ['category_id' => $category->id]);
 
-        // Invalida todo el caché de categorías para reflejar el nuevo registro
-        $this->flushCache();
+        // Invalida contadores del dashboard al crear una categoría nueva
+        $this->flushCache($category->id);
 
         return $category;
     }
@@ -79,7 +75,7 @@ class CategoryService
 
         Log::info('Categoría actualizada', ['category_id' => $category->id]);
 
-        $this->flushCache();
+        $this->flushCache($category->id);
 
         return $category;
     }
@@ -95,14 +91,15 @@ class CategoryService
 
         Log::info('Categoría eliminada', ['category_id' => $categoryId]);
 
-        $this->flushCache();
+        $this->flushCache($categoryId);
     }
 
     /**
-     * Invalida todas las entradas de caché etiquetadas con el tag de categorías.
+     * Invalida la clave de caché del registro afectado y los contadores del dashboard.
      */
-    private function flushCache(): void
+    private function flushCache(int $id): void
     {
-        Cache::tags([self::CACHE_TAG])->flush();
+        Cache::forget("categories.{$id}");
+        Cache::forget('categories_count');
     }
 }

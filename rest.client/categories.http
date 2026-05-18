@@ -1,7 +1,7 @@
 @url = http://localhost:8081/api
 @token = ouQWurpHdU68MIOsaZl3F8eQItVwAIWNrv1eP0ElmQ1Fy2miyQRlgLs9VQr1
 
-### dashboard
+### categories
 GET {{url}}/categories
 Accept: application/json
 Content-Type: application/json
@@ -34,3 +34,9 @@ Authorization: Bearer {{token}}
 #     "prev_cursor": null
 #   }
 # }
+
+### categories
+GET {{url}}/categories?name=Categoria%2063
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
