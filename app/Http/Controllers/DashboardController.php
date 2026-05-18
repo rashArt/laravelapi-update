@@ -2,18 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\ApiResponse;
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\StockMovement;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
+    use ApiResponse;
+
     public function index()
     {
-        // Legacy issue: multiple heavy queries without caching or optimized indexes.
-        return response()->json([
-            'products' => DB::table('products')->count(),
-            'categories' => DB::table('categories')->count(),
-            'low_stock' => DB::table('products')->where('stock', '<', 10)->get(),
-            'last_movements' => DB::table('stock_movements')->orderBy('created_at', 'desc')->limit(20)->get(),
+        // Conteos cacheados con tags para invalidación selectiva (TTL: 1 hora)
+        $products   = Cache::tags(['dashboard', 'products'])->remember('products_count', 3600, fn () => Product::count());
+        $categories = Cache::tags(['dashboard', 'categories'])->remember('categories_count', 3600, fn () => Category::count());
+
+        return $this->successResponse([
+            'products'       => $products,
+            'categories'     => $categories,
+            'low_stock'      => Product::where('stock', '<', 10)->limit(20)->get(),
+            'last_movements' => StockMovement::latest()->take(20)->get(),
         ]);
     }
 
@@ -21,9 +31,10 @@ class DashboardController extends Controller
     {
         try {
             DB::select('SELECT 1');
-            return response()->json(['status' => 'ok', 'database' => 'connected']);
+
+            return $this->successResponse(['database' => 'connected']);
         } catch (\Throwable $e) {
-            return response()->json(['status' => 'fail', 'error' => $e->getMessage()], 500);
+            return $this->errorResponse($e->getMessage(), 500);
         }
     }
 }

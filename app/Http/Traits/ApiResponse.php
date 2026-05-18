@@ -36,6 +36,27 @@ trait ApiResponse
     }
 
     /**
+     * Respuesta paginada: fusiona status/code con data, links y meta del paginador.
+     * Usar en lugar de successResponse() cuando el resultado es una ResourceCollection
+     * respaldada por un CursorPaginator o LengthAwarePaginator.
+     */
+    protected function paginatedResponse(
+        \Illuminate\Http\Resources\Json\ResourceCollection $collection,
+        int $code = 200
+    ): JsonResponse {
+        // Obtiene la respuesta completa del paginador (incluye data, links, meta)
+        $payload = json_decode(
+            $collection->response(request())->getContent(),
+            associative: true
+        );
+
+        return response()->json(
+            array_merge(['status' => true, 'code' => $code], $payload),
+            $code
+        );
+    }
+
+    /**
      * Respuesta de error de validación con detalle de campos.
      */
     protected function validationErrorResponse(array $errors, int $code = 422): JsonResponse

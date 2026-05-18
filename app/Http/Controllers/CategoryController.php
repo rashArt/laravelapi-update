@@ -2,62 +2,101 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Resources\CategoryCollection;
+use App\Http\Resources\CategoryResource;
+use App\Http\Traits\ApiResponse;
 use App\Models\Category;
+use App\Services\CategoryService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class CategoryController extends Controller
 {
-    public function index(Request $request)
+    use ApiResponse;
+
+    public function __construct(
+        private readonly CategoryService $categoryService
+    ) {}
+
+    /**
+     * Lista las categorías paginadas con cursor.
+     * Acepta query param ?per_page=N (máximo 100).
+     */
+    public function index(Request $request): JsonResponse
     {
-        // Legacy issue: returns all records, no cache, no pagination.
-        $categories = Category::orderBy('created_at', 'desc')->get();
-        return response()->json(['categories' => $categories]);
+        // Validación de parámetros de consulta antes de llegar al servicio
+        $validated = validator($request->query(), [
+            'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
+            'name'     => ['sometimes', 'string', 'max:255'],
+            'status'   => ['sometimes', 'boolean'],
+        ])->validate();
+
+        $perPage = (int) ($validated['per_page'] ?? 15);
+        $filters = array_filter(
+            ['name' => $validated['name'] ?? null, 'status' => $validated['status'] ?? null],
+            fn ($v) => !is_null($v)
+        );
+
+        $categories = $this->categoryService->getAllPaginated($perPage, $filters);
+
+        return $this->paginatedResponse(new CategoryCollection($categories));
     }
 
-    public function store(Request $request)
+    /**
+     * Crea una nueva categoría con validación robusta via FormRequest.
+     */
+    public function store(StoreCategoryRequest $request): JsonResponse
     {
-        if (!$request->name) {
-            return response()->json(['error' => 'name required'], 422);
+        $category = $this->categoryService->create($request->validated());
+
+        return $this->successResponse(new CategoryResource($category), 201);
+    }
+
+    /**
+     * Retorna el detalle de una categoría. Respuesta desde caché Redis.
+     */
+    public function show(int $id): JsonResponse
+    {
+        try {
+            $category = $this->categoryService->findOrFail($id);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException) {
+            return $this->errorResponse('Categoría no encontrada.', 404);
         }
 
-        $category = Category::create($request->all());
-        Log::info('Category created', ['category_id' => $category->id]);
-
-        return response()->json($category, 201);
+        return $this->successResponse(new CategoryResource($category));
     }
 
-    public function show($id)
+    /**
+     * Actualiza una categoría existente e invalida el caché relacionado.
+     */
+    public function update(UpdateCategoryRequest $request, int $id): JsonResponse
     {
-        return response()->json(Category::find($id));
-    }
-
-    public function update(Request $request, $id)
-    {
-        $category = Category::find($id);
-
-        if (!$category) {
-            return response()->json(['message' => 'No category'], 404);
+        try {
+            $category = $this->categoryService->findOrFail($id);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException) {
+            return $this->errorResponse('Categoría no encontrada.', 404);
         }
 
-        $category->fill($request->all());
-        $category->save();
+        $category = $this->categoryService->update($category, $request->validated());
 
-        Log::info('Category updated', ['category_id' => $category->id]);
-
-        return response()->json(['updated' => true, 'category' => $category]);
+        return $this->successResponse(new CategoryResource($category));
     }
 
-    public function destroy($id)
+    /**
+     * Elimina una categoría e invalida el caché relacionado.
+     */
+    public function destroy(int $id): JsonResponse
     {
-        $category = Category::find($id);
-        if (!$category) {
-            return response()->json(['error' => 'not found'], 404);
+        try {
+            $category = $this->categoryService->findOrFail($id);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException) {
+            return $this->errorResponse('Categoría no encontrada.', 404);
         }
 
-        $category->delete();
-        Log::info('Category deleted', ['category_id' => $id]);
+        $this->categoryService->delete($category);
 
-        return response()->json(['ok' => true]);
+        return $this->successResponse(null, 204);
     }
 }

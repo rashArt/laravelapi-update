@@ -1,5 +1,5 @@
 @url = http://localhost:8081/api
-@token =
+@token = ouQWurpHdU68MIOsaZl3F8eQItVwAIWNrv1eP0ElmQ1Fy2miyQRlgLs9VQr1
 
 ### health check
 GET {{url}}/health
@@ -55,4 +55,20 @@ Authorization: Bearer {{token}}
 #       "email": "admin@legacy.test"
 #     }
 #   }
+# }
+
+# {
+#   "status": false,
+#   "code": 401,
+#   "message": "Token no proporcionado."
+# }
+
+### logout
+POST {{url}}/logout
+Accept: application/json
+Authorization: Bearer {{token}}
+
+# {
+#   "status": true,
+#   "code": 200
 # }

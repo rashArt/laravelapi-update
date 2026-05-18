@@ -28,6 +28,8 @@ services:
     container_name: legacy_redis
     volumes:
       - legacy_redis_data:/data
+    networks:
+      - legacy-network
     restart: always
   mysql:
     image: mysql:8.0
