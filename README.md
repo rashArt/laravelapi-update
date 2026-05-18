@@ -12,6 +12,7 @@ API RESTful de gestión de inventario y productos. Migrada desde Laravel 8 a **L
 | Caché / Colas | Redis (alpine) |
 | Servidor web | Nginx (proxy inverso → php-fpm) |
 | Contenedores | Docker + Docker Compose |
+| Documentación API | Scramble (OpenAPI 3.1) |
 
 ---
 
@@ -140,6 +141,31 @@ docker exec legacy_php php artisan config:cache
 docker exec legacy_php php artisan route:cache
 docker exec legacy_php php artisan view:cache
 ```
+
+---
+
+## Documentación API (Scramble)
+
+El proyecto incluye documentación OpenAPI 3.1 generada automáticamente por [Scramble](https://scramble.dedoc.co/). No requiere anotaciones manuales: infiere los endpoints, parámetros, cuerpos de petición y respuestas directamente desde los controllers, Form Requests y API Resources.
+
+### URLs disponibles
+
+| URL | Descripción |
+|---|---|
+| `http://localhost:8081/docs/api` | UI interactiva (Stoplight Elements) |
+| `http://localhost:8081/docs/api.json` | Especificación OpenAPI 3.1 en JSON |
+
+### Autenticación en la UI
+
+1. Abrir `http://localhost:8081/docs/api` en el navegador.
+2. Hacer clic en el botón **Authorize** (candado).
+3. Ingresar el token en el campo `bearerAuth`:
+   ```
+   ouQWurpHdU68MIOsaZl3F8eQItVwAIWNrv1eP0ElmQ1Fy2miyQRlgLs9VQr1
+   ```
+4. Todos los endpoints protegidos quedan habilitados para ejecutarse directamente desde la UI.
+
+> La documentación está disponible únicamente en entornos no productivos (`APP_ENV != production`).
 
 ---
 
