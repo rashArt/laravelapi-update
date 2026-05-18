@@ -1,0 +1,41 @@
+@url = http://localhost:8081/api
+@token =
+
+### health check
+GET {{url}}/health
+Accept: application/json
+Content-Type: application/json
+
+
+### login
+POST {{url}}/login
+Accept: application/json
+Content-Type: application/json
+
+{
+    "email": "admin@legacy.test",
+    "password": "password"
+}
+
+# {
+#   "status": false,
+#   "code": 422,
+#   "errors": {
+#     "password": [
+#       "La contrase\u00f1a es incorrecta."
+#     ]
+#   }
+# }
+
+# {
+#   "status": true,
+#   "code": 200,
+#   "data": {
+#     "token": "dvEy90buH2QXTxXQhKjqyHD1kXVvWHRR9UXnx7G7RqbA8OtepxiZivzruSF8",
+#     "user": {
+#       "id": 1,
+#       "name": "Admin Legacy",
+#       "email": "admin@legacy.test"
+#     }
+#   }
+# }

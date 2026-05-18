@@ -1,0 +1,49 @@
+# Laravel
+/vendor/
+/node_modules/
+.env
+.env.local
+.env.*.local
+/storage/logs/
+/storage/framework/cache/
+/storage/framework/sessions/
+/storage/framework/views/
+/bootstrap/cache/
+
+# Composer
+composer.lock
+
+# IDE & Editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# Testing
+/coverage/
+.phpunit.result.cache
+phpunit.xml
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# Dependencies
+node_modules/
+dist/
+build/
+
+# Local env files
+.env.local
+.env.*.local
